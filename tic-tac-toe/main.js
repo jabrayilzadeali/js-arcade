@@ -23,7 +23,7 @@ const STATE_MESSAGES = {
 }
 
 let state;
-let againstAi = true
+let againstAi = false
 let aiPlayer = STATE.O
 let aiLevel = 'easy'
 
@@ -42,13 +42,6 @@ function ai(board, aiPlayer) {
     console.log(`ai plays`)
     if (aiLevel === 'easy') {
         const arr = []
-        console.log('board: ', board)
-        // board.forEach((pos, index) => {
-        //     console.log(pos)
-        //     if (pos === "") {
-        //         arr.push(index)
-        //     }
-        // })
         const arr2 = board.reduce((x, pos, index) => {
             if (pos === '') {
                 x.push(index)
@@ -98,7 +91,10 @@ function updateStatus() {
     } else if (state === STATE.STALEMATE) {
         result = 'stalemate'
     } else {
-        result = `${currentPlayer(turn * -1)}'s turn`
+        result = `${board.every(item => item === "")
+            ? currentPlayer()
+            : currentPlayer(turn * -1)}
+            's turn`
     }
     document.querySelector('[data-status]').textContent = result
     console.log(currentPlayer())
@@ -107,28 +103,35 @@ function updateStatus() {
 updateStatus()
 
 squares.forEach(square => square.addEventListener('click', () => {
-    if (state === STATE.WON || state === STATE.STALEMATE) return
+    if (state === STATE.WON || state === STATE.STALEMATE || board[square.dataset.squareIndex] !== "") return
     console.log(againstAi, currentPlayer() === aiPlayer, currentPlayer(), aiPlayer)
     if (againstAi) {
-        clickSquare(square)
-        ai(board, aiPlayer)
+        // clickSquare(square)
         // turn *= -1
+        // ai(board, aiPlayer)
+        if (currentPlayer() === aiPlayer) {
+            ai(board, aiPlayer)
+            clickSquare(square)
+        } else {
+            clickSquare(square)
+            ai(board, aiPlayer)
+        }
     } else {
         clickSquare(square)
     }
     redrawBoard()
     checkGameState()
     updateStatus()
-    if (!againstAi) turn *= -1
+    turn *= -1
 }))
 
 function checkGameState() {
     for (const pos of winningPositions) {
-        const [a, b, c] = pos 
+        const [a, b, c] = pos
         if (board[a] !== "" && board[a] === board[b] && board[b] === board[c]) {
             // alert(`${currentPlayer()} is won`)
             state = STATE.WON
-            return 
+            return
         }
     }
     if (board.some(pos => pos === "")) {
