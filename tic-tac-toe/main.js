@@ -23,8 +23,8 @@ const STATE_MESSAGES = {
 }
 
 let state;
-let againstAi = false
-let aiPlayer = STATE.O
+let againstAi = true
+let aiPlayer = STATE.X
 let aiLevel = 'easy'
 
 const winningPositions = [
@@ -39,27 +39,17 @@ const winningPositions = [
 ];
 
 function ai(board, aiPlayer) {
-    console.log(`ai plays`)
     if (aiLevel === 'easy') {
-        const arr = []
-        const arr2 = board.reduce((x, pos, index) => {
+        console.log(board)
+        const arr = board.reduce((x, pos, index) => {
             if (pos === '') {
                 x.push(index)
             }
             return x
         }, [])
-        let random = arr2[Math.floor(Math.random() * arr2.length)]
+        let random = arr[Math.floor(Math.random() * arr.length)]
         board[random] = aiPlayer
-        console.log('arr: ', arr, 'arr2: ', arr2)
     }
-    // const copyBoard = [...board]
-    // board.forEach(pos => {
-    //     if(pos === "") {
-    //         copyBoard[pos] = currentPlayer()
-    //         console.log(copyBoard)
-
-    //     }
-    // })
 }
 
 let turn = 1
@@ -97,32 +87,42 @@ function updateStatus() {
             's turn`
     }
     document.querySelector('[data-status]').textContent = result
-    console.log(currentPlayer())
 }
 
 updateStatus()
 
-squares.forEach(square => square.addEventListener('click', () => {
-    if (state === STATE.WON || state === STATE.STALEMATE || board[square.dataset.squareIndex] !== "") return
-    console.log(againstAi, currentPlayer() === aiPlayer, currentPlayer(), aiPlayer)
-    if (againstAi) {
-        // clickSquare(square)
-        // turn *= -1
-        // ai(board, aiPlayer)
-        if (currentPlayer() === aiPlayer) {
-            ai(board, aiPlayer)
-            clickSquare(square)
-        } else {
-            clickSquare(square)
-            ai(board, aiPlayer)
-        }
-    } else {
-        clickSquare(square)
-    }
+if (againstAi && currentPlayer() === aiPlayer) {
+    console.log('here')
+    ai(board, aiPlayer)
     redrawBoard()
-    checkGameState()
     updateStatus()
     turn *= -1
+}
+
+squares.forEach(square => square.addEventListener('click', () => {
+    if (againstAi) {
+        if (state === STATE.WON || state === STATE.STALEMATE || board[square.dataset.squareIndex] !== "") return
+        clickSquare(square)
+        redrawBoard()
+        checkGameState()
+        updateStatus()
+        console.log('state: ', state)
+        turn *= -1
+        if (state === STATE.WON || state === STATE.STALEMATE) return
+        ai(board, aiPlayer)
+        redrawBoard()
+        checkGameState()
+        updateStatus()
+        turn *= -1
+    } else {
+        if (state === STATE.WON || state === STATE.STALEMATE || board[square.dataset.squareIndex] !== "") return
+        clickSquare(square)
+        redrawBoard()
+        checkGameState()
+        updateStatus()
+        console.log(currentPlayer())
+        turn *= -1
+    }
 }))
 
 function checkGameState() {
