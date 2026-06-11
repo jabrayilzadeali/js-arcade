@@ -10,6 +10,7 @@
 
 <body>
     <main>
+
         <p>Status: <span data-status>X's turn</span></p>
         <div class="board">
             <div data-square-index="0" class="square"></div>
@@ -23,6 +24,22 @@
             <div data-square-index="8" class="square"></div>
         </div>
     </main>
+    <button data-replay-btn>Replay</button>
+    <form action="">
+        <select data-choose-against-who name="against-who">
+            <option value="friend">Against friend</option>
+            <option value="ai">Against ai</option>
+        </select>
+        <select data-ai-is-x-or-o name="ai-is-x-or-o">
+            <option value="x">X</option>
+            <option value="o">O</option>
+        </select>
+        <select data-ai-level name="ai-level">
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+        </select>
+    </form>
 
     <script type="module" src="main.js"></script>
 </body>
